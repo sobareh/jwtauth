@@ -1,16 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class LogoutController extends Controller
 {
-    public function __construct()
-    {   
-        $this->middleware('auth:api');
-    }
-
     /**
      * Handle the incoming request.
      *
@@ -19,6 +15,6 @@ class UserController extends Controller
      */
     public function __invoke(Request $request)
     {
-        return $request->user()->name;
+        auth()->logout();
     }
 }
