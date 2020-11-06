@@ -26,7 +26,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'email_verified_at'
     ];
 
     /**
@@ -38,9 +38,14 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
+    public function OTPCode()
+    {
+        return $this->hasOne("App\OTPCode");
+    }
 
 
-    // Rest omitted for brevity
+
+    // JWT Auth Configuration - Rest omitted for brevity
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
