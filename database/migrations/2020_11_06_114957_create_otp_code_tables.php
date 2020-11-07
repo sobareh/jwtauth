@@ -16,7 +16,8 @@ class CreateOtpCodeTables extends Migration
         Schema::create('otp_code_tables', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->string('kode_otp', 6);
+            $table->string('otp', 6);
+            $table->timestamp('valid_until');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

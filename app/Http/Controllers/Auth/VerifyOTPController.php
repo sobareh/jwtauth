@@ -2,32 +2,43 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\User;
 use App\OTPCode;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\VerifyOTPResource;
 
 class VerifyOTPController extends Controller
 {
-    public function __construct()
-    {   
-        $this->middleware('auth:api');
-    }
-
     public function __invoke(Request $request)
     {
-        $request_kode_otp = request('otp_code');
-        
-        $otp = new OTPCode;
-        $dataotp = $otp->find(auth()->user()->id);
-        $match_kode_otp = $dataotp->kode_otp;
-        $match_user_id_otp = $dataotp->user_id;
+        $requestotp = request('otp');
+        $otp_code = OTPCode::where('otp', $requestotp)->first();
 
-
-        if (auth()->user()->id === $match_user_id_otp && $match_kode_otp === $request_kode_otp) {
-            return response()->json("your OTP code is valid.");       
-        } else {
-            return response("your OTP code is invalid", 401);
+        if (!$otp_code) {
+            return response()->json([
+                'response_code' => '01',
+                'response_message' => 'OTP code tidak ditemukan',
+            ], 401);
         }
 
+        $now = Carbon::now();
+
+        if ($now > $otp_code->valid_until) {
+            return response()->json([
+                'response_code' => '01',
+                'response_message' => 'kode otp sudah tidak berlaku, silahkan generate ulang kembali.'
+            ], 401);
+        }
+
+        $user = User::find($otp_code->user_id);
+        $user->email_verified_at = $now;
+        $user->save();
+        
+        $otp_code->delete();
+        $data["user"] = $user;
+
+        return new VerifyOTPResource($user);
     }
 }

@@ -11,7 +11,7 @@ class OTPCode extends Model
     protected  $primaryKey = 'user_id';
 
     protected $fillable = [
-        'user_id', 'kode_otp',
+        'user_id', 'otp', 'valid_until'
     ];
 
     public function user()
